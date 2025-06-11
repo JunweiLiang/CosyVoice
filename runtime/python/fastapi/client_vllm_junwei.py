@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import argparse
-import logging
 import requests
 import torch
 import torchaudio
@@ -54,5 +53,5 @@ if __name__ == "__main__":
     tts_speech = torch.from_numpy(np.array(np.frombuffer(tts_audio, dtype=np.int16))).unsqueeze(dim=0)
 
     torchaudio.save(args.tts_wav, tts_speech, target_sr)
-    logging.info('saved response to {}'.format(args.tts_wav))
-    logging.info("took %.3f seconds" % (time.perf_counter() - start_time))
+    print('saved response to {}'.format(args.tts_wav))
+    print("took %.3f seconds" % (time.perf_counter() - start_time))
