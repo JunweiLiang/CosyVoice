@@ -13,6 +13,7 @@ sys.path.append('third_party/Matcha-TTS')
 from cosyvoice.cli.cosyvoice import CosyVoice2
 from cosyvoice.utils.file_utils import load_wav
 import torchaudio
+"""
 import sounddevice as sd
 
 devices = sd.query_devices()
@@ -22,6 +23,7 @@ if len(devices) == 0:
 print(devices)
 input_device_idx = sd.default.device[0]
 print("Use this mic: %s" % devices[input_device_idx]["name"])
+"""
 
 def generate_voice(output):
     for i, j in enumerate(output):
