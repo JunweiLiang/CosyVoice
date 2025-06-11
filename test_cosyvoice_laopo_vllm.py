@@ -56,7 +56,7 @@ prompt_speech_text = "现在我们有很多突出的矛盾，比如说人岗不�
 
 cosyvoice = CosyVoice2('pretrained_models/CosyVoice2-0.5B',
     load_jit=False, load_trt=True, load_vllm=True, fp16=True,
-    prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k, gpu_memory_utilization=0.15)
+    prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k, gpu_memory_utilization=0.1)
 
 # 微信语音，然后用苹果电脑quicktime录声音，然后转
 # ffmpeg -i /Users/junweiliang/Downloads/zero_shot_prompt_laopo.m4a -ss 00:00:03 -to 00:00:06 -acodec pcm_s16le -ac 1 -ar 16000 zero_shot_prompt_laopo.wav
