@@ -5,9 +5,9 @@ import sys
 sys.path.append('third_party/Matcha-TTS')
 
 
-from vllm import ModelRegistry
-from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
-ModelRegistry.register_model("CosyVoice2ForCausalLM", CosyVoice2ForCausalLM)
+#from vllm import ModelRegistry
+#from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
+M#odelRegistry.register_model("CosyVoice2ForCausalLM", CosyVoice2ForCausalLM)
 
 
 from cosyvoice.cli.cosyvoice import CosyVoice2
