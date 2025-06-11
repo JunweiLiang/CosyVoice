@@ -36,7 +36,7 @@ def generate_voice(output):
 
         #print(type(j["tts_speech"]), j["tts_speech"].shape)
         # <class 'torch.Tensor'> torch.Size([1, 222720])
-        sd.play(j['tts_speech'].cpu().detach().numpy().T, cosyvoice.sample_rate)
+        sd.play(j['tts_speech'].cpu().detach().numpy().T, cosyvoice.sample_rate) # 24000 Hz
         sd.wait() # wait till the playback is complete
         # sd.stop() # will make it stop mid play
 
