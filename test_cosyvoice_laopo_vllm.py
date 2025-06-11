@@ -54,7 +54,9 @@ prompt_speech_text = "现在我们有很多突出的矛盾，比如说人岗不�
 #cosyvoice = CosyVoice2('./pretrained_models/CosyVoice2-0.5B', load_jit=False, load_trt=True, fp16=True,
 #    prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
 
-cosyvoice = CosyVoice2('pretrained_models/CosyVoice2-0.5B', load_jit=True, load_trt=True, load_vllm=True, fp16=True)
+cosyvoice = CosyVoice2('pretrained_models/CosyVoice2-0.5B',
+    load_jit=True, load_trt=True, load_vllm=True, fp16=True,
+    prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
 
 # 微信语音，然后用苹果电脑quicktime录声音，然后转
 # ffmpeg -i /Users/junweiliang/Downloads/zero_shot_prompt_laopo.m4a -ss 00:00:03 -to 00:00:06 -acodec pcm_s16le -ac 1 -ar 16000 zero_shot_prompt_laopo.wav
@@ -70,9 +72,9 @@ for i in range(trys):
     #generate_voice(output)
     save_voice(output)
 
-    #output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
-    #    stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
+    output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
+        stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
-    #generate_voice(output)
+    save_voice(output)
 
     print("--------- try again---------")

@@ -141,7 +141,8 @@ class CosyVoice:
 
 class CosyVoice2(CosyVoice):
 
-    def __init__(self, model_dir, load_jit=False, load_trt=False, load_vllm=False, fp16=False, trt_concurrent=1):
+    def __init__(self, model_dir, load_jit=False, load_trt=False, load_vllm=False, fp16=False, trt_concurrent=1,
+            prompt_text=None, prompt_speech_16k=None):
         self.instruct = True if '-Instruct' in model_dir else False
         self.model_dir = model_dir
         self.fp16 = fp16
@@ -177,6 +178,33 @@ class CosyVoice2(CosyVoice):
                                 trt_concurrent,
                                 self.fp16)
         del configs
+        # by junwei:
+        if prompt_text is not None and prompt_speech_16k is not None:
+            print("start preparing CosyVoice2 preprocessing stuff...")
+            # preprocess these to speed things up if you are using the same prompt!!
+            text_frontend = True
+            self.prompt_text_prepro = self.frontend.text_normalize(prompt_text, split=False, text_frontend=text_frontend)
+            self.model_input_prepro = self.frontend.frontend_zero_shot_prepro(prompt_text, prompt_speech_16k, self.sample_rate)
+            print("done preprocessing.")
+
+    def inference_zero_shot_fast(self, tts_text, stream=False, speed=1.0, text_frontend=True):
+        prompt_text = self.prompt_text_prepro
+        #for i in tqdm(self.frontend.text_normalize(tts_text, split=True, text_frontend=text_frontend)):
+        model_input = self.model_input_prepro
+        for i in self.frontend.text_normalize(tts_text, split=True, text_frontend=text_frontend):
+            #if (not isinstance(i, Generator)) and len(i) < 0.5 * len(prompt_text):
+            #    logging.warning('synthesis text {} too short than prompt text {}, this may lead to bad performance'.format(i, prompt_text))
+            #model_input = self.frontend.frontend_zero_shot(i, prompt_text, prompt_speech_16k, self.sample_rate)
+            start_time = time.time()
+            tts_text_token, tts_text_token_len = self.frontend._extract_text_token(i)
+            model_input["text"] = tts_text_token
+            model_input["text_len"] = tts_text_token_len
+            logging.info('synthesis text {}'.format(i))
+            for model_output in self.model.tts(**model_input, stream=stream, speed=speed):
+                speech_len = model_output['tts_speech'].shape[1] / self.sample_rate
+                logging.info('yield speech len {}, rtf {}'.format(speech_len, (time.time() - start_time) / speech_len))
+                yield model_output
+                start_time = time.time()
 
     def inference_instruct(self, *args, **kwargs):
         raise NotImplementedError('inference_instruct is not implemented for CosyVoice2!')
@@ -192,3 +220,4 @@ class CosyVoice2(CosyVoice):
                 logging.info('yield speech len {}, rtf {}'.format(speech_len, (time.time() - start_time) / speech_len))
                 yield model_output
                 start_time = time.time()
+
