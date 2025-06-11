@@ -56,8 +56,9 @@ if __name__ == "__main__":
     tts_audio = b''
     for r in response.iter_content(chunk_size=16000):
         tts_audio += r
-    tts_speech = torch.from_numpy(np.array(np.frombuffer(tts_audio, dtype=np.int16))).unsqueeze(dim=0)
-    #print(tts_speech.shape) #torch.Size([1, 287040])
+    #tts_speech = torch.from_numpy(np.array(np.frombuffer(tts_audio, dtype=np.int16))).unsqueeze(dim=0)
+    #print(tts_speech.shape) #torch.Size([1, 287040]) # this is for torchaudio.save()
+    tts_speech = np.array(np.frombuffer(tts_audio, dtype=np.int16))
     sd.play(tts_speech, target_sr) # 24000 Hz
 
     print("took %.3f seconds" % (time.perf_counter() - start_time))
