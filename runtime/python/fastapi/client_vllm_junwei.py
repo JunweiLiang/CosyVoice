@@ -55,4 +55,4 @@ if __name__ == "__main__":
 
     torchaudio.save(args.tts_wav, tts_speech, target_sr)
     logging.info('saved response to {}'.format(args.tts_wav))
-    logging.info("took %.3f seconds" % time.perf_counter() - start_time)
+    logging.info("took %.3f seconds" % (time.perf_counter() - start_time))

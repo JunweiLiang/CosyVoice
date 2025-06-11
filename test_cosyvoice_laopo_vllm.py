@@ -72,7 +72,7 @@ for i in range(trys):
 
     #generate_voice(output)
     save_voice(output)
-    print("took %.3f seconds" % time.perf_counter() - start_time)
+    print("took %.3f seconds" % (time.perf_counter() - start_time))
     output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
         stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
