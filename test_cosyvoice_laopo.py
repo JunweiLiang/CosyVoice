@@ -43,7 +43,7 @@ def generate_voice(output):
 def save_voice(output):
     for i, j in enumerate(output):
         print(i)
-        torchaudio.save('laopo_output.wav'.format(i), j['tts_speech'], 16000)
+        torchaudio.save('laopo_output.wav'.format(i), j['tts_speech'], cosyvoice.sample_rate)
 
 # NOTE if you want to reproduce the results on https://funaudiollm.github.io/cosyvoice2, please add text_frontend=False during inference
 # zero_shot usage
