@@ -55,7 +55,7 @@ prompt_speech_text = "现在我们有很多突出的矛盾，比如说人岗不�
 #    prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
 
 cosyvoice = CosyVoice2('pretrained_models/CosyVoice2-0.5B',
-    load_jit=True, load_trt=True, load_vllm=True, fp16=True,
+    load_jit=False, load_trt=True, load_vllm=True, fp16=True,
     prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
 
 # 微信语音，然后用苹果电脑quicktime录声音，然后转
