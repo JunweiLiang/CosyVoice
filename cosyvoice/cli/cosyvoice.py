@@ -142,7 +142,7 @@ class CosyVoice:
 class CosyVoice2(CosyVoice):
 
     def __init__(self, model_dir, load_jit=False, load_trt=False, load_vllm=False, fp16=False, trt_concurrent=1,
-            prompt_text=None, prompt_speech_16k=None):
+            prompt_text=None, prompt_speech_16k=None, gpu_memory_utilization=0.2):
         self.instruct = True if '-Instruct' in model_dir else False
         self.model_dir = model_dir
         self.fp16 = fp16
@@ -169,7 +169,7 @@ class CosyVoice2(CosyVoice):
                         '{}/flow.pt'.format(model_dir),
                         '{}/hift.pt'.format(model_dir))
         if load_vllm:
-            self.model.load_vllm('{}/vllm'.format(model_dir))
+            self.model.load_vllm('{}/vllm'.format(model_dir), gpu_memory_utilization=gpu_memory_utilization)
         if load_jit:
             self.model.load_jit('{}/flow.encoder.{}.zip'.format(model_dir, 'fp16' if self.fp16 is True else 'fp32'))
         if load_trt:

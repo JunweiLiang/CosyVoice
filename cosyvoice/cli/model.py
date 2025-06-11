@@ -271,13 +271,13 @@ class CosyVoice2Model(CosyVoiceModel):
         flow_encoder = torch.jit.load(flow_encoder_model, map_location=self.device)
         self.flow.encoder = flow_encoder
 
-    def load_vllm(self, model_dir):
+    def load_vllm(self, model_dir, gpu_memory_utilization=0.2):
         export_cosyvoice2_vllm(self.llm, model_dir, self.device)
         from vllm import EngineArgs, LLMEngine
         engine_args = EngineArgs(model=model_dir,
                                  skip_tokenizer_init=True,
                                  enable_prompt_embeds=True,
-                                 gpu_memory_utilization=0.2)
+                                 gpu_memory_utilization=gpu_memory_utilization)
         self.llm.vllm = LLMEngine.from_engine_args(engine_args)
         del self.llm.llm.model.model.layers
 
