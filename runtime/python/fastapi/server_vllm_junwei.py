@@ -27,6 +27,10 @@ sys.path.append('{}/../../../third_party/Matcha-TTS'.format(ROOT_DIR))
 from cosyvoice.cli.cosyvoice import CosyVoice, CosyVoice2
 from cosyvoice.utils.file_utils import load_wav
 
+from vllm import ModelRegistry
+from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
+ModelRegistry.register_model("CosyVoice2ForCausalLM", CosyVoice2ForCausalLM)
+
 app = FastAPI()
 # set cross region allowance
 app.add_middleware(
@@ -100,7 +104,7 @@ if __name__ == '__main__':
                         help='local path or modelscope repo id')
     parser.add_argument('--gpu_memory_utilization',
                         type=float,
-                        default=0.2)
+                        default=0.1)
     parser.add_argument("--prompt_audio_path", default="./test_audio/zero_shot_prompt_laoban_16s_no_music.wav")
     parser.add_argument("--voice_type", type=int, default=0, help="0: laoban, 1:huawei, 2:xiong, 3:fast xiong, 4:laopo")
 
