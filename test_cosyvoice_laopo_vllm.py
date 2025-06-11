@@ -3,7 +3,7 @@
 
 import sys
 sys.path.append('third_party/Matcha-TTS')
-
+import time
 
 from vllm import ModelRegistry
 from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
@@ -66,12 +66,13 @@ cosyvoice = CosyVoice2('pretrained_models/CosyVoice2-0.5B',
 
 trys = 3
 for i in range(trys):
+    start_time = time.perf_counter()
     output = cosyvoice.inference_zero_shot('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
         prompt_speech_text, prompt_speech_16k, stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
     #generate_voice(output)
     save_voice(output)
-
+    print("took %.3f seconds" % time.perf_counter() - start_time)
     output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
         stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 

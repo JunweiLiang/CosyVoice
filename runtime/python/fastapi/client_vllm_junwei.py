@@ -17,7 +17,7 @@ import requests
 import torch
 import torchaudio
 import numpy as np
-
+import time
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     payload = {
         'tts_text': args.tts_text,
     }
+    start_time = time.perf_counter()
     response = requests.request("GET", url, data=payload, stream=True)
 
     tts_audio = b''
@@ -54,3 +55,4 @@ if __name__ == "__main__":
 
     torchaudio.save(args.tts_wav, tts_speech, target_sr)
     logging.info('saved response to {}'.format(args.tts_wav))
+    logging.info("took %.3f seconds" % time.perf_counter() - start_time)
