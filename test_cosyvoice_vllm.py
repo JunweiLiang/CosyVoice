@@ -25,7 +25,7 @@ if __name__ == "__main__":
         sys.exit(0)
     print(devices)
     input_device_idx, output_device_idx = sd.default.device
-    print("Use this speaker: %s" % devices[output_device_idx]["name"])
+    print("default is using this speaker: %s" % devices[output_device_idx]["name"])
 
 
     # zero_shot usage
