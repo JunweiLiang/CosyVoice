@@ -289,6 +289,7 @@ class CosyVoice2Model(CosyVoiceModel):
                                  #max_num_seqs=8,
                                  #enforce_eager=False,
                                  #max_model_len=4096,
+                                 quantization="fp8",
                                  )
         self.llm.vllm = LLMEngine.from_engine_args(engine_args)
         self.llm.lock = threading.Lock()

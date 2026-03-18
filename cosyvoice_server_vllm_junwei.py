@@ -98,7 +98,7 @@ if __name__ == '__main__':
                         default=50000)
     parser.add_argument('--model_dir',
                         type=str,
-                        default='pretrained_models/CosyVoice2-0.5B',
+                        default='pretrained_models/Fun-CosyVoice3-0.5B',
                         help='local path or modelscope repo id')
     parser.add_argument('--gpu_memory_utilization',
                         type=float,
