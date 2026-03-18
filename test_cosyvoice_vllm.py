@@ -9,6 +9,8 @@ from cosyvoice.utils.file_utils import load_wav
 import torchaudio
 import sounddevice as sd
 import torchaudio.functional as F
+import torchaudio
+import torch
 
 from vllm import ModelRegistry
 from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
@@ -49,26 +51,35 @@ if __name__ == "__main__":
 
     def generate_voice(output):
         for i, j in enumerate(output):
-            print(i)
+            print(f"Processing segment {i}")
 
-            # 1. Define a standard target sample rate that ALSA likes
+            # 1. Grab tensor, force it to standard float32
+            audio_tensor = j['tts_speech'].cpu().detach().to(torch.float32)
+
+            # 2. Normalize the audio to the [-1.0, 1.0] range to prevent clipping/silence
+            max_val = max(abs(audio_tensor.max()), abs(audio_tensor.min()))
+            if max_val > 0:
+                audio_tensor = audio_tensor / max_val
+
+            # 3. Resample to 48000Hz (from our previous fix)
             target_sr = 48000
-
-            # 2. Grab the audio tensor
-            audio_tensor = j['tts_speech'].cpu().detach()
-
-            # 3. Resample using torchaudio
             resampled_audio = F.resample(
                 audio_tensor,
                 orig_freq=cosyvoice.sample_rate,
                 new_freq=target_sr
             )
 
-            # 4. Play the resampled audio at the new sample rate
-            sd.play(resampled_audio.numpy().T, target_sr)
+            # 4. Save to a WAV file (Guaranteed to work if you are on a remote server!)
+            file_name = f'zero_shot_output_{i}.wav'
+            torchaudio.save(file_name, resampled_audio, target_sr)
+            print(f"Saved audio to {file_name}")
+
+            # 5. Try playing it locally (Will only be heard if running locally)
+            audio_np = resampled_audio.numpy().T
+            sd.play(audio_np, target_sr)
 
             print("took %.3f seconds" % (time.perf_counter() - start_time))
-            sd.wait() # wait till the playback is complete
+            sd.wait()
 
 
     # 微信语音，然后用苹果电脑quicktime录声音，然后转
@@ -76,13 +87,14 @@ if __name__ == "__main__":
     # if you want to slow down the audio: -filter:a "atempo=0.8"
 
 
-    trys = 3 # 4 次
+    trys = 1 # 4 次
     for i in range(trys):
         start_time = time.perf_counter()
         output = cosyvoice.inference_zero_shot('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
             prompt_speech_text, wav_file, stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
         generate_voice(output)
+        sys.exit()
         start_time = time.perf_counter()
         output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
             stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
