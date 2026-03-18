@@ -25,8 +25,8 @@ if len(devices) == 0:
     print("No microphone devices found")
     sys.exit(0)
 print(devices)
-input_device_idx = sd.default.device[0]
-print("Use this mic: %s" % devices[input_device_idx]["name"])
+input_device_idx, output_device_idx = sd.default.device
+print("default is using this speaker: %s" % devices[output_device_idx]["name"])
 
 
 audio_data_buffer = None # Stores the current audio segment to play
