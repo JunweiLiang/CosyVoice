@@ -105,7 +105,7 @@ if __name__ == "__main__":
             first_chunk_played = True
 
         # 1. Convert raw bytes straight into an int16 numpy array
-        raw_speech = np.frombuffer(r, dtype=np.int16)
+        raw_speech = np.frombuffer(r, dtype=np.int16).copy()
 
         # 2. Temporarily cast to float32 ONLY because PyTorch's resample requires it
         audio_tensor = torch.from_numpy(raw_speech).to(torch.float32)
