@@ -36,8 +36,11 @@ if __name__ == "__main__":
     # 你是个很沮丧的导游<|endofprompt|> 没有明显感觉
     prompt_speech_text = "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
 
-    wav_file = './test_audio/zero_shot_prompt_laoban_fast_no_music.wav'
+    wav_file = './test_audio/zero_shot_prompt_laoban_no_music.wav'
     prompt_speech_text = "You are a helpful assistant.<|endofprompt|>第二届粤港澳大湾区博士、博士后创新创业大赛，在广州南沙这篇充满活力与机遇的沃土，向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。"
+
+    wav_file = './test_audio/zero_shot_prompt_laoban_15s_no_music.wav'
+    prompt_speech_text = "You are a helpful assistant.<|endofprompt|>向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。"
 
     prompt_speech_16k = load_wav(wav_file, 16000)
 
