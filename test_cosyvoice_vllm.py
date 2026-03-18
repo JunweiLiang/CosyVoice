@@ -44,7 +44,8 @@ if __name__ == "__main__":
 
     # zero_shot usage
     print("----Loading wav -----")
-    prompt_speech_16k = load_wav('./test_audio/laopo2.wav', 16000)
+    wav_file = './test_audio/laopo2.wav'
+    prompt_speech_16k = load_wav(wav_file, 16000)
 
     prompt_speech_text = "现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
     print("----Loaded wav -----")
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     for i in range(trys):
         start_time = time.perf_counter()
         output = cosyvoice.inference_zero_shot('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
-            prompt_speech_text, prompt_speech_16k, stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
+            prompt_speech_text, wav_file, stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
         generate_voice(output)
         start_time = time.perf_counter()
