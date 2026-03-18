@@ -34,7 +34,7 @@ if __name__ == "__main__":
     prompt_speech_16k = load_wav(wav_file, 16000)
 
     # cosyvoice 3 比 2多了这个prompt: You are a helpful assistant.<|endofprompt|> 必须要加
-    prompt_speech_text = "你是个很乐观很高兴讲话速度很快的导游<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
+    prompt_speech_text = "你是个很沮丧的导游<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
     print("----Loaded wav -----")
 
     """
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
             # 5. Try playing it locally (Will only be heard if running locally)
             audio_np = resampled_audio.numpy().T
-            sd.play(audio_np, target_sr, device=8)
+            sd.play(audio_np, target_sr, device=8) # 这里device对应前面打印的 output
 
             print("took %.3f seconds" % (time.perf_counter() - start_time))
             sd.wait()
@@ -87,14 +87,13 @@ if __name__ == "__main__":
     # if you want to slow down the audio: -filter:a "atempo=0.8"
 
 
-    trys = 1 # 4 次
+    trys = 3 #  次
     for i in range(trys):
         start_time = time.perf_counter()
         output = cosyvoice.inference_zero_shot('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
             prompt_speech_text, wav_file, stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
 
         generate_voice(output)
-        sys.exit()
         start_time = time.perf_counter()
         output = cosyvoice.inference_zero_shot_fast('收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。',
             stream=False) # stream=True 下面才会有多个segment，效果很差，会卡
