@@ -24,7 +24,7 @@ if __name__ == "__main__":
         print("No speaker devices found")
         sys.exit(0)
     print(devices)
-    input_device_idx, output_device_idx = sd.default.device[0]
+    input_device_idx, output_device_idx = sd.default.device
     print("Use this speaker: %s" % devices[output_device_idx]["name"])
 
 
