@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # ffmpeg -i /Users/junweiliang/Downloads/zero_shot_prompt_laopo.m4a -ss 00:00:03 -to 00:00:06 -acodec pcm_s16le -ac 1 -ar 16000 zero_shot_prompt_laopo.wav
     # if you want to slow down the audio: -filter:a "atempo=0.8"
 
-    """
+
     trys = 3 # 4 次
     for i in range(trys):
         start_time = time.perf_counter()
@@ -78,4 +78,4 @@ if __name__ == "__main__":
 
         generate_voice(output)
         print("--------- try again---------")
-    """
+
