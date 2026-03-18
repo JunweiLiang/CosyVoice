@@ -19,6 +19,7 @@ import torch
 import numpy as np
 import whisper
 from typing import Callable
+import torchaudio
 import torchaudio.compliance.kaldi as kaldi
 import os
 import re
