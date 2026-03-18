@@ -42,20 +42,22 @@ def generate_voice(output):
 
 
 # zero_shot usage
+print("----Loading wav -----")
 prompt_speech_16k = load_wav('./test_audio/laopo2.wav', 16000)
 
 prompt_speech_text = "现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
-
+print("----Loaded wav -----")
 
 """
 cosyvoice = CosyVoice2('./pretrained_models/CosyVoice2-0.5B_vllm/CosyVoice2-0.5B',
     load_jit=False, load_trt=False, fp16=True, load_vllm=True,
     prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k, gpu_memory_utilization=0.5, quantization="fp8")#quantization=None)
 """
+print("----Loading model -----")
 cosyvoice = AutoModel(
     model_dir='pretrained_models/Fun-CosyVoice3-0.5B', load_vllm=True,
     prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
-
+print("----load model done -----")
 
 # 微信语音，然后用苹果电脑quicktime录声音，然后转
 # ffmpeg -i /Users/junweiliang/Downloads/zero_shot_prompt_laopo.m4a -ss 00:00:03 -to 00:00:06 -acodec pcm_s16le -ac 1 -ar 16000 zero_shot_prompt_laopo.wav
