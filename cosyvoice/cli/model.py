@@ -287,8 +287,8 @@ class CosyVoice2Model(CosyVoiceModel):
                                  gpu_memory_utilization=0.7,
                                  tensor_parallel_size=2,
                                  max_num_seqs=8,
-                                 enforce_eager=False,
-                                 max_model_len=4096,
+                                 #enforce_eager=False,
+                                 #max_model_len=4096,
                                  )
         self.llm.vllm = LLMEngine.from_engine_args(engine_args)
         self.llm.lock = threading.Lock()
