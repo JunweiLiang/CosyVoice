@@ -285,7 +285,7 @@ class CosyVoice2Model(CosyVoiceModel):
                                  skip_tokenizer_init=True,
                                  enable_prompt_embeds=True,
                                  gpu_memory_utilization=0.7,
-                                 tensor_parallel_size=2,
+                                 tensor_parallel_size=1,
                                  #max_num_seqs=8,
                                  #enforce_eager=False,
                                  #max_model_len=4096,
