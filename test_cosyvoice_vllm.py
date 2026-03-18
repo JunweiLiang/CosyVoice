@@ -8,6 +8,7 @@ from cosyvoice.cli.cosyvoice import CosyVoice, CosyVoice2
 from cosyvoice.utils.file_utils import load_wav
 import torchaudio
 import sounddevice as sd
+import torchaudio.functional as F
 
 from vllm import ModelRegistry
 from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
@@ -43,25 +44,31 @@ if __name__ == "__main__":
     cosyvoice = AutoModel(
         model_dir='pretrained_models/Fun-CosyVoice3-0.5B', load_vllm=True,
         prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
-    print(cosyvoice.sample_rate)
-    print("model sample rate from config: %s" % cosyvoice.sample_rate)
+    print("model sample rate from config: %s" % cosyvoice.sample_rate) # 24000
     print("----load model done -----")
 
     def generate_voice(output):
         for i, j in enumerate(output):
             print(i)
-            #torchaudio.save('zero_shot_{}_laoban.wav'.format(i), j['tts_speech'], cosyvoice.sample_rate)
-            # 只支持macOS
-            #torchaudio.io.play_audio(j['tts_speech'], cosyvoice.sample_rate, device=0)
 
-            #https://python-sounddevice.readthedocs.io/en/0.5.1/usage.html#playback
+            # 1. Define a standard target sample rate that ALSA likes
+            target_sr = 48000
 
-            #print(type(j["tts_speech"]), j["tts_speech"].shape)
-            # <class 'torch.Tensor'> torch.Size([1, 222720])
-            sd.play(j['tts_speech'].cpu().detach().numpy().T, cosyvoice.sample_rate)
+            # 2. Grab the audio tensor
+            audio_tensor = j['tts_speech'].cpu().detach()
+
+            # 3. Resample using torchaudio
+            resampled_audio = F.resample(
+                audio_tensor,
+                orig_freq=cosyvoice.sample_rate,
+                new_freq=target_sr
+            )
+
+            # 4. Play the resampled audio at the new sample rate
+            sd.play(resampled_audio.numpy().T, target_sr)
+
             print("took %.3f seconds" % (time.perf_counter() - start_time))
             sd.wait() # wait till the playback is complete
-            # sd.stop() # will make it stop mid play
 
 
     # 微信语音，然后用苹果电脑quicktime录声音，然后转
