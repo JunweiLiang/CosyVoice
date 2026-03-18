@@ -106,6 +106,18 @@ class CosyVoiceFrontEnd:
         speech_token_len = torch.tensor([speech_token.shape[1]], dtype=torch.int32).to(self.device)
         return speech_token, speech_token_len
 
+    def _extract_speech_token_from_speech(self, speech):
+        assert speech.shape[1] / 16000 <= 30, 'do not support extract speech token for audio longer than 30s'
+        feat = whisper.log_mel_spectrogram(speech, n_mels=128)
+        speech_token = self.speech_tokenizer_session.run(None,
+                                                         {self.speech_tokenizer_session.get_inputs()[0].name:
+                                                          feat.detach().cpu().numpy(),
+                                                          self.speech_tokenizer_session.get_inputs()[1].name:
+                                                          np.array([feat.shape[2]], dtype=np.int32)})[0].flatten().tolist()
+        speech_token = torch.tensor([speech_token], dtype=torch.int32).to(self.device)
+        speech_token_len = torch.tensor([speech_token.shape[1]], dtype=torch.int32).to(self.device)
+        return speech_token, speech_token_len
+
     def _extract_spk_embedding(self, prompt_wav):
         speech = load_wav(prompt_wav, 16000)
         feat = kaldi.fbank(speech,
@@ -118,8 +130,25 @@ class CosyVoiceFrontEnd:
         embedding = torch.tensor([embedding]).to(self.device)
         return embedding
 
+    def _extract_spk_embedding_from_speech(self, speech):
+        feat = kaldi.fbank(speech,
+                           num_mel_bins=80,
+                           dither=0,
+                           sample_frequency=16000)
+        feat = feat - feat.mean(dim=0, keepdim=True)
+        embedding = self.campplus_session.run(None,
+                                              {self.campplus_session.get_inputs()[0].name: feat.unsqueeze(dim=0).cpu().numpy()})[0].flatten().tolist()
+        embedding = torch.tensor([embedding]).to(self.device)
+        return embedding
+
     def _extract_speech_feat(self, prompt_wav):
         speech = load_wav(prompt_wav, 24000)
+        speech_feat = self.feat_extractor(speech).squeeze(dim=0).transpose(0, 1).to(self.device)
+        speech_feat = speech_feat.unsqueeze(dim=0)
+        speech_feat_len = torch.tensor([speech_feat.shape[1]], dtype=torch.int32).to(self.device)
+        return speech_feat, speech_feat_len
+
+    def _extract_speech_feat_from_speech(self, speech):
         speech_feat = self.feat_extractor(speech).squeeze(dim=0).transpose(0, 1).to(self.device)
         speech_feat = speech_feat.unsqueeze(dim=0)
         speech_feat_len = torch.tensor([speech_feat.shape[1]], dtype=torch.int32).to(self.device)
@@ -193,14 +222,14 @@ class CosyVoiceFrontEnd:
         #tts_text_token, tts_text_token_len = self._extract_text_token(tts_text)
         prompt_text_token, prompt_text_token_len = self._extract_text_token(prompt_text)
         prompt_speech_resample = torchaudio.transforms.Resample(orig_freq=16000, new_freq=resample_rate)(prompt_speech_16k)
-        speech_feat, speech_feat_len = self._extract_speech_feat(prompt_speech_resample)
-        speech_token, speech_token_len = self._extract_speech_token(prompt_speech_16k)
+        speech_feat, speech_feat_len = self._extract_speech_feat_from_speech(prompt_speech_resample)
+        speech_token, speech_token_len = self._extract_speech_token_from_speech(prompt_speech_16k)
         if resample_rate == 24000:
             # cosyvoice2, force speech_feat % speech_token = 2
             token_len = min(int(speech_feat.shape[1] / 2), speech_token.shape[1])
             speech_feat, speech_feat_len[:] = speech_feat[:, :2 * token_len], 2 * token_len
             speech_token, speech_token_len[:] = speech_token[:, :token_len], token_len
-        embedding = self._extract_spk_embedding(prompt_speech_16k)
+        embedding = self._extract_spk_embedding_from_speech(prompt_speech_16k)
         model_input_prepro = {'text': None, 'text_len': None,
                        'prompt_text': prompt_text_token, 'prompt_text_len': prompt_text_token_len,
                        'llm_prompt_speech_token': speech_token, 'llm_prompt_speech_token_len': speech_token_len,
