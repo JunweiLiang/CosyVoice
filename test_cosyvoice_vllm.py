@@ -70,9 +70,9 @@ if __name__ == "__main__":
             )
 
             # 4. Save to a WAV file (Guaranteed to work if you are on a remote server!)
-            file_name = f'zero_shot_output_{i}.wav'
-            torchaudio.save(file_name, resampled_audio, target_sr)
-            print(f"Saved audio to {file_name}")
+            #file_name = f'zero_shot_output_{i}.wav'
+            #torchaudio.save(file_name, resampled_audio, target_sr)
+            #print(f"Saved audio to {file_name}")
 
             # 5. Try playing it locally (Will only be heard if running locally)
             audio_np = resampled_audio.numpy().T
