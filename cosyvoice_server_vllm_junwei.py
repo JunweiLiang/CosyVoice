@@ -105,8 +105,6 @@ if __name__ == '__main__':
                         default=0.1)
     parser.add_argument("--prompt_audio_path", default="./test_audio/zero_shot_prompt_laoban_16s_no_music.wav")
     parser.add_argument("--voice_type", type=int, default=0, help="0: laoban, 1:huawei, 2:xiong, 3:fast xiong, 4:laopo")
-    parser.add_argument("--quantization",
-                        default="fp8", choices=["fp8", "none"])
 
     args = parser.parse_args()
 
@@ -134,9 +132,8 @@ if __name__ == '__main__':
         if args.quantization == "none":
             args.quantization = None
         cosyvoice = CosyVoice2(args.model_dir,
-            load_jit=False, load_trt=False, load_vllm=True, fp16=True,
-            prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k,
-            gpu_memory_utilization=args.gpu_memory_utilization, quantization=args.quantization)
+            load_jit=False, load_trt=False, load_vllm=True, fp16=False,
+            prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
     except Exception:
         raise TypeError('failed to load cosyvoice2 model!')
     uvicorn.run(app, host="0.0.0.0", port=args.port)
