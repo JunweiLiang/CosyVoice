@@ -286,7 +286,7 @@ class CosyVoice2Model(CosyVoiceModel):
                                  enable_prompt_embeds=True,
                                  gpu_memory_utilization=0.12,
                                  tensor_parallel_size=2,
-                                 enable_prefi_caching=True,
+                                 enable_prefix_caching=True,
                                  no_enable_mm_embeds=True)
         self.llm.vllm = LLMEngine.from_engine_args(engine_args)
         self.llm.lock = threading.Lock()
