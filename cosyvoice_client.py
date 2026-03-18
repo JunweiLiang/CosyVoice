@@ -26,6 +26,7 @@ if len(devices) == 0:
     sys.exit(0)
 print(devices)
 input_device_idx, output_device_idx = sd.default.device
+sd.default.device = (8, 8)
 print("default is using this speaker: %s" % devices[output_device_idx]["name"])
 
 
