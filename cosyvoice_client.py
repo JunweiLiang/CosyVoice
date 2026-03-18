@@ -25,8 +25,8 @@ if len(devices) == 0:
     print("No microphone devices found")
     sys.exit(0)
 print(devices)
-input_device_idx, output_device_idx = sd.default.device
 sd.default.device = (8, 8)
+input_device_idx, output_device_idx = sd.default.device
 print("default is using this speaker: %s" % devices[output_device_idx]["name"])
 
 
