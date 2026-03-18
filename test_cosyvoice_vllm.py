@@ -43,6 +43,7 @@ if __name__ == "__main__":
     cosyvoice = AutoModel(
         model_dir='pretrained_models/Fun-CosyVoice3-0.5B', load_vllm=True,
         prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
+    print(cosyvoice.sample_rate)
     print("model sample rate from config:" % cosyvoice.sample_rate)
     print("----load model done -----")
 
