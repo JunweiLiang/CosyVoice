@@ -34,7 +34,7 @@ if __name__ == "__main__":
     prompt_speech_16k = load_wav(wav_file, 16000)
 
     # cosyvoice 3 比 2多了这个prompt: You are a helpful assistant.<|endofprompt|> 必须要加
-    prompt_speech_text = "你是个很乐观很高兴的导游<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
+    prompt_speech_text = "你是个很乐观很高兴讲话速度很快的导游<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
     print("----Loaded wav -----")
 
     """
@@ -57,11 +57,11 @@ if __name__ == "__main__":
             audio_tensor = j['tts_speech'].cpu().detach().to(torch.float32)
 
             # 2. Normalize the audio to the [-1.0, 1.0] range to prevent clipping/silence
-            max_val = max(abs(audio_tensor.max()), abs(audio_tensor.min()))
-            if max_val > 0:
-                audio_tensor = audio_tensor / max_val
+            #max_val = max(abs(audio_tensor.max()), abs(audio_tensor.min()))
+            #if max_val > 0:
+            #    audio_tensor = audio_tensor / max_val
 
-            # 3. Resample to 48000Hz (from our previous fix)
+            # 3. Resample to 48000Hz
             target_sr = 48000
             resampled_audio = F.resample(
                 audio_tensor,
