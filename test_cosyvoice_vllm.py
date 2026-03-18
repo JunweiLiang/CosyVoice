@@ -24,7 +24,7 @@ if __name__ == "__main__":
         print("No speaker devices found")
         sys.exit(0)
     print(devices)
-    output_device_idx = sd.default.device[0]
+    input_device_idx, output_device_idx = sd.default.device[0]
     print("Use this speaker: %s" % devices[output_device_idx]["name"])
 
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
             # 5. Try playing it locally (Will only be heard if running locally)
             audio_np = resampled_audio.numpy().T
-            sd.play(audio_np, target_sr)
+            sd.play(audio_np, target_sr, device=8)
 
             print("took %.3f seconds" % (time.perf_counter() - start_time))
             sd.wait()
