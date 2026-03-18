@@ -62,6 +62,7 @@ if __name__ == "__main__":
             # 1. Grab tensor, force it to standard float32
             audio_tensor = j['tts_speech'].cpu().detach().to(torch.float32)
 
+            # 实测不需要这个
             # 2. Normalize the audio to the [-1.0, 1.0] range to prevent clipping/silence
             #max_val = max(abs(audio_tensor.max()), abs(audio_tensor.min()))
             #if max_val > 0:

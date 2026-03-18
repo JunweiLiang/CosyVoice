@@ -29,6 +29,8 @@ from vllm import ModelRegistry
 from cosyvoice_vllm.vllm.cosyvoice2 import CosyVoice2ForCausalLM
 ModelRegistry.register_model("CosyVoice2ForCausalLM", CosyVoice2ForCausalLM)
 
+from cosyvoice.cli.cosyvoice import AutoModel
+
 app = FastAPI()
 # set cross region allowance
 app.add_middleware(
@@ -100,9 +102,6 @@ if __name__ == '__main__':
                         type=str,
                         default='pretrained_models/Fun-CosyVoice3-0.5B',
                         help='local path or modelscope repo id')
-    parser.add_argument('--gpu_memory_utilization',
-                        type=float,
-                        default=0.1)
     parser.add_argument("--prompt_audio_path", default="./test_audio/zero_shot_prompt_laoban_16s_no_music.wav")
     parser.add_argument("--voice_type", type=int, default=0, help="0: laoban, 1:huawei, 2:xiong, 3:fast xiong, 4:laopo")
 
@@ -111,17 +110,17 @@ if __name__ == '__main__':
     assert args.voice_type in [0, 1, 2, 3, 4]
     voice_type2prompt = {
         # laoban, zero_shot_prompt_laoban_no_music.wav
-        0: "第二届粤港澳大湾区博士、博士后创新创业大赛，在广州南沙这篇充满活力与机遇的沃土，向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。",
+        0: "You are a helpful assistant.<|endofprompt|>第二届粤港澳大湾区博士、博士后创新创业大赛，在广州南沙这篇充满活力与机遇的沃土，向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。",
         # huawei ren zheng fei, huawei_20second.wav
-        1: "最重要是他们翅膀要硬，他们要自由去飞翔。这是父母的期望，父母并不是期望儿女来照顾父母，这个这个不是我们的期望。所以他们飞得越高，他们跟我们的差距就越大，代沟就越多，他愿意跟我们沟通就沟通，不愿意沟通我们就不沟通。",
+        1: "You are a helpful assistant.<|endofprompt|>最重要是他们翅膀要硬，他们要自由去飞翔。这是父母的期望，父母并不是期望儿女来照顾父母，这个这个不是我们的期望。所以他们飞得越高，他们跟我们的差距就越大，代沟就越多，他愿意跟我们沟通就沟通，不愿意沟通我们就不沟通。",
 
         # xiong slow, xiong_hui_23second_slow.wav; 2 is better, 3 is too fast
-        2: "现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速。",
+        2: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速。",
 
         # xiong, xiong_hui_23second.wav
-        3: "现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。",
+        3: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。",
         # laopo, laopo2.wav
-        4: "现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
+        4: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
     }
 
     prompt_speech_text = voice_type2prompt[args.voice_type]
@@ -129,10 +128,8 @@ if __name__ == '__main__':
 
 
     try:
-        if args.quantization == "none":
-            args.quantization = None
-        cosyvoice = CosyVoice2(args.model_dir,
-            load_jit=False, load_trt=False, load_vllm=True, fp16=False,
+        cosyvoice = AutoModel(
+            model_dir='pretrained_models/Fun-CosyVoice3-0.5B', load_vllm=True,
             prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
     except Exception:
         raise TypeError('failed to load cosyvoice2 model!')
