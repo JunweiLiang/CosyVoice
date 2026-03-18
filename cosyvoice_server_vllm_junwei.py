@@ -22,11 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import numpy as np
 sys.path.append('third_party/Matcha-TTS')
-from cosyvoice_vllm.cli.cosyvoice import CosyVoice, CosyVoice2
-from cosyvoice_vllm.utils.file_utils import load_wav
+#from cosyvoice.cli.cosyvoice import CosyVoice, CosyVoice2
+from cosyvoice.utils.file_utils import load_wav
 
 from vllm import ModelRegistry
-from cosyvoice_vllm.vllm.cosyvoice2 import CosyVoice2ForCausalLM
+from cosyvoice.vllm.cosyvoice2 import CosyVoice2ForCausalLM
 ModelRegistry.register_model("CosyVoice2ForCausalLM", CosyVoice2ForCausalLM)
 
 from cosyvoice.cli.cosyvoice import AutoModel
