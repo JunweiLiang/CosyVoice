@@ -188,7 +188,9 @@ class CosyVoice2(CosyVoice):
 
 class CosyVoice3(CosyVoice2):
 
-    def __init__(self, model_dir, load_trt=False, load_vllm=False, fp16=False, trt_concurrent=1, prompt_text=None, prompt_speech_16k=None):
+    def __init__(self,
+        model_dir, load_trt=False, load_vllm=False, fp16=False, trt_concurrent=1, prompt_text=None, prompt_speech_16k=None,
+        gpu_memory_utilization=0.8):
         self.model_dir = model_dir
         self.fp16 = fp16
         if not os.path.exists(model_dir):
@@ -214,7 +216,7 @@ class CosyVoice3(CosyVoice2):
                         '{}/flow.pt'.format(model_dir),
                         '{}/hift.pt'.format(model_dir))
         if load_vllm:
-            self.model.load_vllm('{}/vllm'.format(model_dir))
+            self.model.load_vllm('{}/vllm'.format(model_dir), gpu_memory_utilization=gpu_memory_utilization)
         if load_trt:
             if self.fp16 is True:
                 logging.warning('DiT tensorRT fp16 engine have some performance issue, use at caution!')

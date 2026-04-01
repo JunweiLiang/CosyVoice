@@ -104,6 +104,7 @@ if __name__ == '__main__':
                         help='local path or modelscope repo id')
     parser.add_argument("--prompt_audio_path", default="./test_audio/zero_shot_prompt_laoban_15s_no_music.wav")
     parser.add_argument("--voice_type", type=int, default=0, help="0: laoban, 1:huawei, 2:xiong, 3:fast xiong, 4:laopo")
+    parser.add_argument("--gpu_memory_utilization", type=float, default=0.8, help="need to set to 0.7 for 24GB GPU")
 
     args = parser.parse_args()
 
@@ -130,7 +131,8 @@ if __name__ == '__main__':
     try:
         cosyvoice = AutoModel(
             model_dir='pretrained_models/Fun-CosyVoice3-0.5B', load_vllm=True,
-            prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k)
+            prompt_text=prompt_speech_text, prompt_speech_16k=prompt_speech_16k,
+            gpu_memory_utilization=args.gpu_memory_utilization)
     except Exception:
         raise TypeError('failed to load cosyvoice2 model!')
     uvicorn.run(app, host="0.0.0.0", port=args.port)
