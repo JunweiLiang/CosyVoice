@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    assert args.voice_type in [0, 1, 2, 3, 4]
+    assert args.voice_type in [0, 1, 2, 3, 4, 5]
     voice_type2prompt = {
         # laoban, zero_shot_prompt_laoban_15s_no_music.wav
         0: "You are a helpful assistant.<|endofprompt|>向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。",
