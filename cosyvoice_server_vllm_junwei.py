@@ -121,7 +121,9 @@ if __name__ == '__main__':
         # xiong, xiong_hui_23second.wav
         3: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。",
         # laopo, laopo2.wav
-        4: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。"
+        4: "You are a helpful assistant.<|endofprompt|>现在我们有很多突出的矛盾，比如说人岗不匹配，比如说这个整个学科设置不合理，那么就整个会导致我们培养出来的学生的能力，和真正的市场需求，他是脱节的。那么这个问题为什么会产生呢，一方面是因为现在整个科技的发展在加速，导致整个用工市场，对能力的需求的结构，也是在快速地变化。",
+        # laoban, zero_shot_prompt_laoban_15s_no_music_fast.wav
+        5: "You are a helpful assistant.<|endofprompt|>向全球博士和博士后青年才俊们，发出诚挚的邀请，极目南沙，放眼世界，我们坚信，每一位参与大赛的青年才俊，都将在这里找到属于自己的舞台。",
     }
 
     prompt_speech_text = voice_type2prompt[args.voice_type]
