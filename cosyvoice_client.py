@@ -10,18 +10,85 @@ import threading
 import queue
 import sys
 
-# --- 1. Device Setup ---
-devices = sd.query_devices()
-if len(devices) == 0:
-    print("No audio devices found", file=sys.stderr)
-    sys.exit(0)
+def get_audio_device_idx(devices, device_id, device_type="input"):
+    """
+    获取音频设备索引（支持麦克风和扬声器）
 
-# Force the USB Camera for both input (8) and output (8)
-sd.default.device = (8, 8)
-input_device_idx, output_device_idx = sd.default.device
-print(f"Default is using this speaker: {devices[output_device_idx]['name']}")
+    Args:
+        devices: sounddevice.query_devices() 返回的设备列表
+        device_id: 指定的设备ID，如果为None则提示用户选择
+        device_type: "input" 表示麦克风，"output" 表示扬声器
 
-# --- 2. Real-Time Streaming Variables ---
+    Returns:
+        int: 选择的设备索引
+    """
+    # 筛选可用设备
+    if device_type == "input":
+        available_devices = [
+            {'index': i, 'name': device['name']}
+            for i, device in enumerate(devices)
+            if device['max_input_channels'] > 0
+        ]
+        device_name = "Microphone"
+    else:  # output
+        available_devices = [
+            {'index': i, 'name': device['name']}
+            for i, device in enumerate(devices)
+            if device['max_output_channels'] > 0
+        ]
+        device_name = "Speaker"
+
+    if not available_devices:
+        print(f"No {device_name.lower()} devices found.")
+        sys.exit(1)
+
+    chosen_device_idx = None
+
+    # 如果指定了device_id，验证其有效性
+    if device_id is not None:
+        is_valid = False
+        for device in available_devices:
+            if device['index'] == device_id:
+                chosen_device_idx = device_id
+                is_valid = True
+                break
+        if not is_valid:
+            print(f"Warning: Provided {device_type}_id {device_id} is not a valid {device_type} device.")
+
+    # 如果没有选择设备，提示用户选择
+    if chosen_device_idx is None:
+        print(f"\n----- Available {device_name} Devices -----")
+        for device in available_devices:
+            print(f"[{device['index']}] {device['name']}")
+        print("--------------------------------------")
+
+        while True:
+            try:
+                choice_str = input(f"Please select a {device_name.lower()} by its number: ")
+                choice_idx = int(choice_str)
+
+                is_valid_choice = False
+                for device in available_devices:
+                    if device['index'] == choice_idx:
+                        chosen_device_idx = choice_idx
+                        is_valid_choice = True
+                        break
+
+                if is_valid_choice:
+                    break
+                else:
+                    print("Invalid selection. Please enter a number from the list.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+            except (KeyboardInterrupt, EOFError):
+                print("\nSelection cancelled. Exiting.")
+                sys.exit(0)
+
+    return chosen_device_idx
+
+
+
+# --- Real-Time Streaming Variables ---
 audio_queue = queue.Queue()
 # Buffer initialized as int16 to match standard hardware formats
 leftover_chunk = np.zeros((0, 1), dtype=np.int16)
@@ -65,10 +132,22 @@ def _audio_playback_callback(outdata, frames, time_info, status):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', type=str, default='127.0.0.1')
-    parser.add_argument('--port', type=int, default='50000')
+    parser.add_argument('--port', type=int, default=50000)
     parser.add_argument('--tts_text', type=str,
                         default='收到好友从远方寄来的生日礼物，那份意外的惊喜与深深的祝福让我心中充满了甜蜜的快乐，笑容如花儿般绽放。')
+    # Argument for speaker selection
+    parser.add_argument("--speaker_id", type=int, default=None, help="speaker device index (sounddevice)")
     args = parser.parse_args()
+
+    # --- DEVICE SELECTION LOGIC ---
+    devices = sd.query_devices()
+    if len(devices) == 0:
+        print("No audio devices found", file=sys.stderr)
+        sys.exit(0)
+
+    # Use your utils.py to handle the interactive selection!
+    output_device_idx = get_audio_device_idx(devices, args.speaker_id, device_type="output")
+    print(f"\nUsing this speaker [{output_device_idx}]: {devices[output_device_idx]['name']}\n")
 
     url = f"http://{args.host}:{args.port}/inference_zero_shot_fast"
     orig_sr = 24000
@@ -76,8 +155,9 @@ if __name__ == "__main__":
 
     payload = {'tts_text': args.tts_text}
 
-    # Initialize the audio stream, strictly enforcing int16 dtype
+    # Initialize the audio stream, strictly enforcing int16 dtype and passing the chosen device
     audio_stream = sd.OutputStream(
+        device=output_device_idx,
         samplerate=target_sr,
         channels=1,
         dtype=np.int16,
@@ -94,7 +174,7 @@ if __name__ == "__main__":
     audio_stream.start()
     first_chunk_played = False
 
-    # --- 3. The Producer Loop ---
+    # --- The Producer Loop ---
     # We grab 8000 bytes at a time (equivalent to ~0.16 seconds of 24kHz audio)
     for r in response.iter_content(chunk_size=8000):
         if not r:
@@ -130,5 +210,3 @@ if __name__ == "__main__":
 
     audio_stream.close()
     print("Playback complete.")
-
-
